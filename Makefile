@@ -5,7 +5,7 @@ export GO111MODULE=on
 
 ONOS_CERTS_VERSION := latest
 ONOS_CERTS_DEBUG_VERSION := debug
-ONOS_CERTS_VERSION := stable
+ONOS_BUILD_VERSION := stable
 
 build: # @HELP build the Go binaries and run all validations (default)
 build:
@@ -32,8 +32,31 @@ linters: # @HELP examines Go source code and reports coding problems
 license_check: # @HELP examine and ensure license headers exist
 	./build/licensing/boilerplate.py -v
 
+onos-certs-base-docker: # @HELP build onos-topo base Docker image
+	@go mod vendor
+	docker build . -f build/base/Dockerfile \
+		--build-arg ONOS_BUILD_VERSION=${ONOS_BUILD_VERSION} \
+		-t onosproject/onos-certs-base:${ONOS_CERTS_VERSION}
+	@rm -rf vendor
 
-all: build
+
+onos-certs-debug-docker: onos-certs-base-docker # @HELP build onos-topo Docker debug image
+	docker build . -f build/onos-certs-debug/Dockerfile \
+		--build-arg ONOS_CERTS_BASE_VERSION=${ONOS_CERTS_VERSION} \
+		-t onosproject/onos-certs:${ONOS_CERTS_DEBUG_VERSION}
+
+onos-certs-docker: # @HELP build onos certs Docker image
+onos-certs-docker: onos-certs-base-docker
+	@go mod vendor
+	docker build . -f build/onos-certs/Dockerfile \
+		--build-arg ONOS_BUILD_VERSION=${ONOS_BUILD_VERSION} \
+		-t onosproject/onos-certs:${ONOS_CERTS_VERSION}
+	@rm -rf vendor
+
+images: # @HELP build all Docker images
+images: build onos-certs-docker onos-certs-debug-docker
+
+all: build images
 
 
 clean: # @HELP remove all the build artifacts
