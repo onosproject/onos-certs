@@ -16,4 +16,43 @@ package main
 
 func main() {
 
+	/*defaultCluster := cluster.New(kube.GetAPI("default"))
+	resource := setup.NewResource().
+		SetName("ca-issuer-2").
+		SetCluster(defaultCluster).
+		SetResourceType("Issuer").
+		Build()
+	caIssuer := setup.NewCaIssuer().SetResource(resource).
+		SetSecretName("ca-key-pair").
+		Build()
+	_ = caIssuer.Create()
+	issuer, _ := caIssuer.GetCaIssuer()
+	fmt.Println(issuer.Name, issuer.Namespace, issuer.Status)
+
+	resource2 := setup.NewResource().
+		SetName("certificate4").
+		SetCluster(defaultCluster).
+		Build()
+
+	cert := setup.NewCertificate().SetResource(resource2).
+		SetSecretName("ca-key-pair").
+		SetCommonName("cert4").
+		SetIssuerRef("ca-issuer-2", "", "Issuer").
+		Build()
+
+	err := cert.Create()
+	fmt.Println(err)*/
+
+	/*defaultCluster := cluster.New(kube.GetAPI("default"))
+	resource := setup.NewResource().
+		SetName("self-signed").
+		SetCluster(defaultCluster).
+		SetResourceType("issuer").
+		Build()
+	selfSignedIssuer := setup.NewSelfSignedIssuer().SetResource(resource).
+		Build()
+	_ = selfSignedIssuer.Create()
+	issuer, _ := selfSignedIssuer.GetSelfSignedIssuer()
+	fmt.Println(issuer.Name, issuer.Namespace, issuer.Status)*/
+
 }

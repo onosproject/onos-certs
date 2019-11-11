@@ -21,7 +21,7 @@ import (
 )
 
 func TestTypes(t *testing.T) {
-	var resourceType resourceType = "issuer"
+	var resourceType resourceType = "Issuer"
 	assert.Equal(t, resourceType.name(), issuerResourceType.name())
 	var issuerType issuerType = "CA"
 	assert.Equal(t, issuerType.name(), ca.name())

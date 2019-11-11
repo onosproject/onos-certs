@@ -27,10 +27,9 @@ func (s issuerType) name() string {
 
 const (
 	// issuerResourceType issuer resource type
-	issuerResourceType resourceType = "issuer"
+	issuerResourceType resourceType = "Issuer"
 	// clusterIssuerResourceType cluster issuer resource type
-	clusterIssuerResourceType resourceType = "clusterIssuer"
-
+	clusterIssuerResourceType resourceType = "ClusterIssuer"
 	// nullResourceType null resource type
 	nullResourceType resourceType = "null"
 )
