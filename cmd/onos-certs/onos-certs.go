@@ -14,46 +14,6 @@
 
 package main
 
-import (
-	"fmt"
-	"time"
-
-	"github.com/onosproject/onos-certs/pkg/cert-manager/cluster"
-	"github.com/onosproject/onos-certs/pkg/cert-manager/kube"
-	"github.com/onosproject/onos-certs/pkg/cert-manager/setup"
-)
-
 func main() {
-
-	defaultCluster := cluster.New(kube.GetAPI("default"))
-	resource := setup.NewResource().
-		SetName("ca-issuer-2").
-		SetCluster(defaultCluster).
-		SetResourceType("Issuer").
-		Build()
-	Issuer := setup.NewIssuer().SetResource(resource).Build()
-	caIssuer := setup.NewCaIssuer().SetIssuer(Issuer).
-		SetSecretName("ca-key-pair-2").
-		Build()
-	_ = caIssuer.Create()
-	issuer, _ := caIssuer.GetCaIssuer()
-	issuerList, _ := caIssuer.Issuer.GetAllIssuers()
-	fmt.Println(issuerList.Items, "----", issuer.Namespace, issuer.Kind)
-
-	resource2 := setup.NewResource().
-		SetName("certificate-1").
-		SetCluster(defaultCluster).
-		Build()
-
-	cert := setup.NewCertificate().SetResource(resource2).
-		SetSecretName("ca-key-pair-2").
-		SetCommonName("cert-1").
-		SetDuration(time.Hour*2).
-		SetRenewBefore(time.Hour*1).
-		SetIssuerRef("ca-issuer-2", "", "Issuer").
-		Build()
-
-	err := cert.Create()
-	fmt.Println(err)
 
 }
