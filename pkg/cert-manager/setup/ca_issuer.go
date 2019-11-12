@@ -22,20 +22,20 @@ import (
 // CaIssuer CA issuer
 type CaIssuer struct {
 	secretName string
-	*Resource
+	*Issuer
 }
 
 // CaIssuerBuilder is issuer builder interface
 type CaIssuerBuilder interface {
-	SetResource(*Resource) CaIssuerBuilder
 	SetSecretName(string) CaIssuerBuilder
+	SetIssuer(*Issuer) CaIssuerBuilder
 	Build() CaIssuer
 }
 
 // NewCaIssuer Creates an instance of ca issuer builder
 func NewCaIssuer() CaIssuerBuilder {
 	return &CaIssuer{
-		Resource:   NewResource().SetResourceType(issuerResourceType).Build(),
+		Issuer:     NewIssuer().Build(),
 		secretName: "default",
 	}
 }
@@ -43,15 +43,14 @@ func NewCaIssuer() CaIssuerBuilder {
 // Build build a CA Issuer instance
 func (ca *CaIssuer) Build() CaIssuer {
 	return CaIssuer{
-		Resource:   ca.Resource,
+		Issuer:     ca.Issuer,
 		secretName: ca.secretName,
 	}
 }
 
-// SetResource set resource name
-func (ca *CaIssuer) SetResource(resource *Resource) CaIssuerBuilder {
-	ca.Resource = resource
-	return ca
+// GetSecretName get secret name
+func (ca *CaIssuer) GetSecretName() string {
+	return ca.secretName
 }
 
 // SetSecretName set secret name
@@ -61,23 +60,49 @@ func (ca *CaIssuer) SetSecretName(secretName string) CaIssuerBuilder {
 
 }
 
+// SetIssuer set a generic issuer
+func (ca *CaIssuer) SetIssuer(issuer *Issuer) CaIssuerBuilder {
+	ca.Issuer = issuer
+	return ca
+}
+
+func (ca *CaIssuer) createIssuer() cmapi.Issuer {
+	return cmapi.Issuer{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      ca.name,
+			Namespace: ca.cluster.GetNameSpace(),
+		},
+		Spec: cmapi.IssuerSpec{
+			IssuerConfig: cmapi.IssuerConfig{
+				CA: &cmapi.CAIssuer{
+					SecretName: ca.secretName,
+				},
+			},
+		},
+	}
+}
+
+func (ca *CaIssuer) createClusterIssuer() cmapi.ClusterIssuer {
+	return cmapi.ClusterIssuer{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      ca.name,
+			Namespace: ca.cluster.GetNameSpace(),
+		},
+		Spec: cmapi.IssuerSpec{
+			IssuerConfig: cmapi.IssuerConfig{
+				CA: &cmapi.CAIssuer{
+					SecretName: ca.secretName,
+				},
+			},
+		},
+	}
+}
+
 // Create creates a CA issuer resource
 func (ca *CaIssuer) Create() error {
 	switch ca.resourceType {
 	case issuerResourceType:
-		issuer := cmapi.Issuer{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      ca.name,
-				Namespace: ca.cluster.GetNameSpace(),
-			},
-			Spec: cmapi.IssuerSpec{
-				IssuerConfig: cmapi.IssuerConfig{
-					CA: &cmapi.CAIssuer{
-						SecretName: ca.secretName,
-					},
-				},
-			},
-		}
+		issuer := ca.createIssuer()
 		_, err := ca.cluster.GetCertManagerClient().
 			CertmanagerV1alpha2().
 			Issuers(ca.cluster.GetNameSpace()).
@@ -85,19 +110,7 @@ func (ca *CaIssuer) Create() error {
 		return err
 
 	case clusterIssuerResourceType:
-		clusterIssuer := cmapi.ClusterIssuer{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      ca.name,
-				Namespace: ca.cluster.GetNameSpace(),
-			},
-			Spec: cmapi.IssuerSpec{
-				IssuerConfig: cmapi.IssuerConfig{
-					CA: &cmapi.CAIssuer{
-						SecretName: ca.secretName,
-					},
-				},
-			},
-		}
+		clusterIssuer := ca.createClusterIssuer()
 		_, err := ca.cluster.GetCertManagerClient().
 			CertmanagerV1alpha2().
 			ClusterIssuers().
@@ -109,7 +122,7 @@ func (ca *CaIssuer) Create() error {
 	return nil
 }
 
-// GetCaIssuer get an issuer based on a given and options
+// GetCaIssuer get an issuer based on a given name and options
 func (ca *CaIssuer) GetCaIssuer() (*cmapi.Issuer, error) {
 	certManagerClient := ca.cluster.GetCertManagerClient()
 	return certManagerClient.CertmanagerV1alpha2().

@@ -16,7 +16,6 @@ package setup
 
 import (
 	"github.com/onosproject/onos-certs/pkg/cert-manager/cluster"
-	"github.com/onosproject/onos-certs/pkg/cert-manager/kube"
 )
 
 // ResourceBuilder Resource builder interface
@@ -34,7 +33,6 @@ func NewResource() ResourceBuilder {
 		name:         "default",
 		apiVersion:   "cert-manager.io/v1alpha2",
 		resourceType: nullResourceType,
-		cluster:      cluster.New(kube.GetAPI("default")),
 	}
 }
 
@@ -56,10 +54,20 @@ type Resource struct {
 	resourceType resourceType
 }
 
+// GetName get resource name
+func (resource *Resource) GetName() string {
+	return resource.name
+}
+
 // SetName set resource name
 func (resource *Resource) SetName(name string) ResourceBuilder {
 	resource.name = name
 	return resource
+}
+
+// GetAPIVersion get resource API version
+func (resource *Resource) GetAPIVersion() string {
+	return resource.apiVersion
 }
 
 // SetAPIVersion set resource api version

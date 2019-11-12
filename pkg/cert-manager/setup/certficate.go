@@ -22,7 +22,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type issuerRef struct {
+// IssuerRef IssuerRef certificate field
+type IssuerRef struct {
 	name  string
 	kind  string
 	group string
@@ -43,7 +44,7 @@ type Certificate struct {
 	//usages       []string
 	duration    time.Duration
 	renewBefore time.Duration
-	issuerRef   issuerRef
+	issuerRef   IssuerRef
 	*Resource
 }
 
@@ -52,14 +53,14 @@ type CertificateBuilder interface {
 	SetResource(*Resource) CertificateBuilder
 	SetSecretName(string) CertificateBuilder
 	SetCommonName(string) CertificateBuilder
-	SetDnsNames([]string) CertificateBuilder
-	SetIpAddresses([]string) CertificateBuilder
+	SetDNSNames([]string) CertificateBuilder
+	SetIPAddresses([]string) CertificateBuilder
 	SetIsCa(bool) CertificateBuilder
 	SetKeyAlgorithm(string) CertificateBuilder
 	SetKeyEncoding(string) CertificateBuilder
 	SetKeySize(int) CertificateBuilder
-	SetOrganizations([]string) CertificateBuilder
-	SetUriSans([]string) CertificateBuilder
+	SetOrganization([]string) CertificateBuilder
+	SetURISans([]string) CertificateBuilder
 	SetDuration(time.Duration) CertificateBuilder
 	SetRenewBefore(time.Duration) CertificateBuilder
 	SetIssuerRef(string, string, string) CertificateBuilder
@@ -102,10 +103,20 @@ func (ce *Certificate) SetResource(resource *Resource) CertificateBuilder {
 	return ce
 }
 
+// GetCommonName get certificate common name
+func (ce *Certificate) GetCommonName() string {
+	return ce.commonName
+}
+
 // SetCommonName set common name
 func (ce *Certificate) SetCommonName(commonName string) CertificateBuilder {
 	ce.commonName = commonName
 	return ce
+}
+
+// GetSecretName get secret name
+func (ce *Certificate) GetSecretName() string {
+	return ce.secretName
 }
 
 // SetSecretName set secret name
@@ -114,16 +125,31 @@ func (ce *Certificate) SetSecretName(secretName string) CertificateBuilder {
 	return ce
 }
 
-// SetDnsNames set dns names
-func (ce *Certificate) SetDnsNames(dnsNames []string) CertificateBuilder {
+// GetDNSNames get certificate dns names
+func (ce *Certificate) GetDNSNames() []string {
+	return ce.dnsNames
+}
+
+// SetDNSNames set dns names
+func (ce *Certificate) SetDNSNames(dnsNames []string) CertificateBuilder {
 	ce.dnsNames = dnsNames
 	return ce
 }
 
-// SetIpAddresses set ip addresses
-func (ce *Certificate) SetIpAddresses(ipAddresses []string) CertificateBuilder {
+// GetIPAddresses get certificate IP addresses
+func (ce *Certificate) GetIPAddresses() []string {
+	return ce.ipAddresses
+}
+
+// SetIPAddresses set ip addresses
+func (ce *Certificate) SetIPAddresses(ipAddresses []string) CertificateBuilder {
 	ce.ipAddresses = ipAddresses
 	return ce
+}
+
+// GetIsCa get IsCa certificate field
+func (ce *Certificate) GetIsCa() bool {
+	return ce.isCa
 }
 
 // SetIsCa set isCa field
@@ -132,10 +158,20 @@ func (ce *Certificate) SetIsCa(isCa bool) CertificateBuilder {
 	return ce
 }
 
-// SetKeyAlgorithm set keyAlgorithm field
+// GetKeyAlgorithm get certificate  key algorithm
+func (ce *Certificate) GetKeyAlgorithm() string {
+	return ce.keyAlgorithm
+}
+
+// SetKeyAlgorithm set keyAlgorithm certificate field
 func (ce *Certificate) SetKeyAlgorithm(keyAlgorithm string) CertificateBuilder {
 	ce.keyAlgorithm = keyAlgorithm
 	return ce
+}
+
+// GetKeyEncoding get keyEncoding certificate field
+func (ce *Certificate) GetKeyEncoding() string {
+	return ce.keyEncoding
 }
 
 // SetKeyEncoding set KeyEncoding field
@@ -144,22 +180,42 @@ func (ce *Certificate) SetKeyEncoding(keyEncoding string) CertificateBuilder {
 	return ce
 }
 
+// GetKeySize get keySize certificate field
+func (ce *Certificate) GetKeySize() int {
+	return ce.keySize
+}
+
 // SetKeySize set KeySize field
 func (ce *Certificate) SetKeySize(keySize int) CertificateBuilder {
 	ce.keySize = keySize
 	return ce
 }
 
-// SetOrganizations set Organizations field
-func (ce *Certificate) SetOrganizations(organizations []string) CertificateBuilder {
-	ce.organization = organizations
+// GetOrganization get organization certificate field
+func (ce *Certificate) GetOrganization() []string {
+	return ce.organization
+}
+
+// SetOrganization set organization certificate field
+func (ce *Certificate) SetOrganization(organization []string) CertificateBuilder {
+	ce.organization = organization
 	return ce
 }
 
-// SetUriSans set UriSANs field
-func (ce *Certificate) SetUriSans(uriSANs []string) CertificateBuilder {
+// GetURISans get UriSAN certificate field
+func (ce *Certificate) GetURISans() []string {
+	return ce.uriSANs
+}
+
+// SetURISans set UriSANs certificate field
+func (ce *Certificate) SetURISans(uriSANs []string) CertificateBuilder {
 	ce.uriSANs = uriSANs
 	return ce
+}
+
+// GetDuration get duration certificate field
+func (ce *Certificate) GetDuration() time.Duration {
+	return ce.duration
 }
 
 // SetDuration set Duration field
@@ -168,15 +224,25 @@ func (ce *Certificate) SetDuration(duration time.Duration) CertificateBuilder {
 	return ce
 }
 
+// GetRenewBefore get renewBefore certificate field
+func (ce *Certificate) GetRenewBefore() time.Duration {
+	return ce.renewBefore
+}
+
 // SetRenewBefore set renewBefore field
 func (ce *Certificate) SetRenewBefore(renewBefore time.Duration) CertificateBuilder {
 	ce.renewBefore = renewBefore
 	return ce
 }
 
+// GetIssuerRef get issuerRef certificate field
+func (ce *Certificate) GetIssuerRef() IssuerRef {
+	return ce.issuerRef
+}
+
 // SetIssuerRef set issuer ref
 func (ce *Certificate) SetIssuerRef(name string, group string, kind string) CertificateBuilder {
-	ref := issuerRef{
+	ref := IssuerRef{
 		name:  name,
 		group: group,
 		kind:  kind,

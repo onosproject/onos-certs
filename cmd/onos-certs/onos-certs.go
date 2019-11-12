@@ -27,43 +27,33 @@ func main() {
 
 	defaultCluster := cluster.New(kube.GetAPI("default"))
 	resource := setup.NewResource().
-		SetName("ca-issuer-1").
+		SetName("ca-issuer-2").
 		SetCluster(defaultCluster).
 		SetResourceType("Issuer").
 		Build()
-	caIssuer := setup.NewCaIssuer().SetResource(resource).
-		SetSecretName("ca-key-pair").
+	Issuer := setup.NewIssuer().SetResource(resource).Build()
+	caIssuer := setup.NewCaIssuer().SetIssuer(Issuer).
+		SetSecretName("ca-key-pair-2").
 		Build()
 	_ = caIssuer.Create()
 	issuer, _ := caIssuer.GetCaIssuer()
-	fmt.Println(issuer.Name, issuer.Namespace, issuer.Status)
+	issuerList, _ := caIssuer.Issuer.GetAllIssuers()
+	fmt.Println(issuerList.Items, "----", issuer.Namespace, issuer.Kind)
 
 	resource2 := setup.NewResource().
-		SetName("certificate-3").
+		SetName("certificate-1").
 		SetCluster(defaultCluster).
 		Build()
 
 	cert := setup.NewCertificate().SetResource(resource2).
-		SetSecretName("ca-key-pair").
-		SetCommonName("cert-3").
-		SetDuration(time.Minute*62).
+		SetSecretName("ca-key-pair-2").
+		SetCommonName("cert-1").
+		SetDuration(time.Hour*2).
 		SetRenewBefore(time.Hour*1).
-		SetIssuerRef("ca-issuer-1", "", "Issuer").
+		SetIssuerRef("ca-issuer-2", "", "Issuer").
 		Build()
 
 	err := cert.Create()
 	fmt.Println(err)
-
-	/*defaultCluster := cluster.New(kube.GetAPI("default"))
-	resource := setup.NewResource().
-		SetName("self-signed").
-		SetCluster(defaultCluster).
-		SetResourceType("issuer").
-		Build()
-	selfSignedIssuer := setup.NewSelfSignedIssuer().SetResource(resource).
-		Build()
-	_ = selfSignedIssuer.Create()
-	issuer, _ := selfSignedIssuer.GetSelfSignedIssuer()
-	fmt.Println(issuer.Name, issuer.Namespace, issuer.Status)*/
 
 }

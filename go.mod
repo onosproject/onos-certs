@@ -21,6 +21,7 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jetstack/cert-manager v0.11.0
 	github.com/json-iterator/go v1.1.8 // indirect
+	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
@@ -33,6 +34,7 @@ require (
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.2.5 // indirect
 	gotest.tools v2.2.0+incompatible
+	k8s.io/api v0.0.0-20190918155943-95b840bb6a1f
 	k8s.io/apimachinery v0.0.0-20190913080033-27d36303b655
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 	k8s.io/klog v0.4.0

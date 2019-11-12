@@ -21,32 +21,32 @@ import (
 
 // SelfSignedIssuer CA issuer
 type SelfSignedIssuer struct {
-	*Resource
+	*Issuer
 }
 
 // SelfSignedIssuerBuilder is issuer builder interface
 type SelfSignedIssuerBuilder interface {
-	SetResource(*Resource) SelfSignedIssuerBuilder
+	SetIssuer(*Issuer) SelfSignedIssuerBuilder
 	Build() SelfSignedIssuer
 }
 
 // NewSelfSignedIssuer Creates an instance of self signed issuer builder
 func NewSelfSignedIssuer() SelfSignedIssuerBuilder {
 	return &SelfSignedIssuer{
-		Resource: NewResource().SetResourceType(issuerResourceType).Build(),
+		Issuer: NewIssuer().Build(),
 	}
 }
 
 // Build build a Self Signed Issuer instance
 func (ss *SelfSignedIssuer) Build() SelfSignedIssuer {
 	return SelfSignedIssuer{
-		Resource: ss.Resource,
+		Issuer: ss.Issuer,
 	}
 }
 
-// SetResource set resource name
-func (ss *SelfSignedIssuer) SetResource(resource *Resource) SelfSignedIssuerBuilder {
-	ss.Resource = resource
+// SetIssuer set a generic issuer
+func (ss *SelfSignedIssuer) SetIssuer(issuer *Issuer) SelfSignedIssuerBuilder {
+	ss.Issuer = issuer
 	return ss
 }
 
